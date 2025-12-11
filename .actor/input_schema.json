@@ -1,24 +1,20 @@
 {
-    "title": "PlaywrightCrawler Template",
+    "title": "Input schema of Google Maps Lead Scraper",
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-        "startUrls": {
-            "title": "Start URLs",
-            "type": "array",
-            "description": "URLs to start with.",
-            "editor": "requestListSources",
-            "prefill": [
-                {
-                    "url": "https://apify.com"
-                }
-            ]
+        "searchQuery": {
+            "title": "Search Query",
+            "type": "string",
+            "description": "What you want to search on Google Maps, e.g., 'cafes in Mumbai'.",
+            "default": "cafes in Mumbai"
         },
-        "maxRequestsPerCrawl": {
-            "title": "Max Requests per Crawl",
+        "maxResults": {
+            "title": "Max Results",
             "type": "integer",
-            "description": "Maximum number of requests that can be made by this crawler.",
-            "default": 100
+            "description": "Maximum number of places to scrape.",
+            "default": 50
         }
-    }
+    },
+    "required": ["searchQuery"]
 }

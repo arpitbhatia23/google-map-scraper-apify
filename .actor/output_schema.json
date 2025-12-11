@@ -1,11 +1,34 @@
 {
     "actorOutputSchemaVersion": 1,
-    "title": "Output schema",
+    "title": "Google Maps Leads Output",
     "properties": {
-        "overview": {
+        "name": {
             "type": "string",
-            "title": "Overview",
-            "template": "{{links.apiDefaultDatasetUrl}}/items?view=overview"
+            "title": "Business Name"
+        },
+        "address": {
+            "type": "string",
+            "title": "Address"
+        },
+        "phone": {
+            "type": "string",
+            "title": "Phone Number"
+        },
+        "website": {
+            "type": "string",
+            "title": "Website"
+        },
+        "rating": {
+            "type": "number",
+            "title": "Rating"
+        },
+        "reviews": {
+            "type": "number",
+            "title": "Number of Reviews"
+        },
+        "url": {
+            "type": "string",
+            "title": "Google Maps URL"
         }
     }
 }

@@ -5,17 +5,37 @@
         "overview": {
             "title": "Overview",
             "transformation": {
-                "fields": ["title", "url"]
+                "fields": ["name", "address", "phone", "website", "rating", "reviews", "url"]
             },
             "display": {
                 "component": "table",
                 "properties": {
-                    "title": {
-                        "label": "Title",
+                    "name": {
+                        "label": "Business Name",
                         "format": "text"
                     },
+                    "address": {
+                        "label": "Address",
+                        "format": "text"
+                    },
+                    "phone": {
+                        "label": "Phone Number",
+                        "format": "text"
+                    },
+                    "website": {
+                        "label": "Website",
+                        "format": "link"
+                    },
+                    "rating": {
+                        "label": "Rating",
+                        "format": "number"
+                    },
+                    "reviews": {
+                        "label": "Reviews",
+                        "format": "number"
+                    },
                     "url": {
-                        "label": "URL",
+                        "label": "Google Maps URL",
                         "format": "link"
                     }
                 }
