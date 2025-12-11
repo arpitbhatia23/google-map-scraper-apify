@@ -7,7 +7,8 @@
             "title": "Search Query",
             "type": "string",
             "description": "What you want to search on Google Maps, e.g., 'cafes in Mumbai'.",
-            "default": "cafes in Mumbai"
+            "default": "cafes in Mumbai",
+            "editor": "textfield"
         },
         "maxResults": {
             "title": "Max Results",
