@@ -4,31 +4,38 @@
     "properties": {
         "name": {
             "type": "string",
-            "title": "Business Name"
+            "title": "Business Name",
+            "template": "{{name}}"
         },
         "address": {
             "type": "string",
-            "title": "Address"
+            "title": "Address",
+            "template": "{{address}}"
         },
         "phone": {
             "type": "string",
-            "title": "Phone Number"
+            "title": "Phone Number",
+            "template": "{{phone}}"
         },
         "website": {
             "type": "string",
-            "title": "Website"
+            "title": "Website",
+            "template": "{{website}}"
         },
         "rating": {
             "type": "number",
-            "title": "Rating"
+            "title": "Rating",
+            "template": "{{rating}}"
         },
         "reviews": {
             "type": "number",
-            "title": "Number of Reviews"
+            "title": "Number of Reviews",
+            "template": "{{reviews}}"
         },
         "url": {
             "type": "string",
-            "title": "Google Maps URL"
+            "title": "Google Maps URL",
+            "template": "{{url}}"
         }
     }
 }
