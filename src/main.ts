@@ -1,4 +1,4 @@
-import { Actor, log } from 'apify';
+import { Actor, Dataset, log } from 'apify';
 import { PlaywrightCrawler, PlaywrightCrawlingContext } from 'crawlee';
 
 interface Input {
@@ -19,19 +19,16 @@ interface Business {
 
 await Actor.init();
 const input = (await Actor.getInput<Input>())!;
-
 const { searchQuery, maxResults } = input;
-
-const results: Business[] = [];
-let collected = 0;
-
-// Google Maps search URL
-const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`;
 
 log.info(`Starting search for: ${searchQuery}`);
 
+const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`;
+const visited = new Set<string>();
+let collected = 0;
+
 const crawler = new PlaywrightCrawler({
-    maxConcurrency: 2,
+    maxConcurrency: 1,
     launchContext: {
         launchOptions: {
             headless: true,
@@ -41,11 +38,11 @@ const crawler = new PlaywrightCrawler({
     async requestHandler(ctx: PlaywrightCrawlingContext) {
         const { page, request, enqueueLinks } = ctx;
 
-        // Detail Page Extraction
+        // === Detail page extraction ===
         if (request.userData.label === 'detail') {
             log.info(`Extracting: ${request.url}`);
 
-            await page.waitForTimeout(1500);
+            await page.waitForTimeout(1500); // small delay for dynamic content
 
             const name = await page
                 .locator('h1')
@@ -65,38 +62,39 @@ const crawler = new PlaywrightCrawler({
                 .locator('[data-item-id="address"]')
                 .textContent()
                 .catch(() => null);
+
+            // Phone extraction
             let phone: string | null = null;
-
             try {
-                // Select any button whose data-item-id starts with phone:tel
                 const phoneButton = page.locator('button[data-item-id^="phone:tel"]');
-
-                // Extract the number from the inner div
-                phone = await phoneButton.locator('div.Io6YTe').textContent();
-
-                // If that fails, fallback to aria-label
+                phone = await phoneButton
+                    .locator('div.Io6YTe')
+                    .textContent()
+                    .catch(() => null);
                 if (!phone) {
                     const ariaLabel = await phoneButton.getAttribute('aria-label');
                     if (ariaLabel) phone = ariaLabel.replace('Phone:', '').trim();
                 }
-
-                if (phone) phone = phone.trim();
-            } catch (err) {
+                phone = phone?.replace(/^[^\d+]+/, '').trim() || null;
+            } catch {
                 phone = null;
             }
 
+            // Website extraction
             let website = await page
-                .locator('[data-item-id="authority"]')
-                .textContent()
+                .locator('a[data-item-id="authority"]')
+                .getAttribute('href')
                 .catch(() => null);
             website = website?.replace(/^[^\w]+/, '').trim() || null;
+
             const category = await page
                 .locator('[jslog]')
                 .nth(3)
                 .textContent()
                 .catch(() => null);
 
-            results.push({
+            // Push data directly to dataset (memory efficient)
+            await Dataset.pushData({
                 name,
                 address,
                 rating,
@@ -110,10 +108,10 @@ const crawler = new PlaywrightCrawler({
             return;
         }
 
-        // Search Page Logic
-        log.info('Scrolling results...');
-
-        for (let i = 0; i < 15; i++) {
+        // === Search page logic ===
+        log.info('Scrolling search results...');
+        for (let i = 0; i < 5; i++) {
+            // reduced scroll for memory efficiency
             await page.mouse.wheel(0, 700);
             await page.waitForTimeout(800);
         }
@@ -126,17 +124,16 @@ const crawler = new PlaywrightCrawler({
 
         for (const link of placeLinks) {
             if (collected >= maxResults) break;
+            if (visited.has(link)) continue;
+            visited.add(link);
             collected++;
 
-            await enqueueLinks({
-                urls: [link],
-                userData: { label: 'detail' },
-            });
+            await enqueueLinks({ urls: [link], userData: { label: 'detail' } });
         }
     },
 });
 
 await crawler.run([searchUrl]);
+log.info(`Crawling finished. Collected ${collected} places.`);
 
-await Actor.pushData(results);
 await Actor.exit();
