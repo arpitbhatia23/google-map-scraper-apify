@@ -23,12 +23,12 @@
             "template": "{{website}}"
         },
         "rating": {
-            "type": "number",
+            "type": "string",
             "title": "Rating",
             "template": "{{rating}}"
         },
         "reviews": {
-            "type": "number",
+            "type": "string",
             "title": "Number of Reviews",
             "template": "{{reviews}}"
         },
